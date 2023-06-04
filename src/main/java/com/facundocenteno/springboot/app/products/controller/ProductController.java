@@ -1,7 +1,8 @@
 package com.facundocenteno.springboot.app.products.controller;
 
 import java.util.List;
-import java.util.stream.Collector;
+import java.util.concurrent.TimeUnit;
+//import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,21 +27,35 @@ public class ProductController {
 	@Autowired
 	private IProductService productService;
 	
-	@GetMapping("/products")
+	@GetMapping("/list")
 	public List<Product> getAll(){
 		return productService.findAll().stream().map(product -> {
-			//product.setPort(Integer.parseInt(env.getProperty("server.port")));
-			product.setPort(port);
+			product.setPort(Integer.parseInt(env.getProperty("local.server.port")));
+			//product.setPort(port);
 			return product;
 		}).collect(Collectors.toList());
 		
 	}
 	
-	@GetMapping("/products/{id}")
-	public Product getById(@PathVariable Long id) {
+	@GetMapping("/get/{id}")
+	
+	
+
+	public Product getById(@PathVariable Long id) throws InterruptedException {
+		
+		if(id.equals(10L)) {
+			throw new IllegalStateException("producto no encontrado");
+		}
+		
+		if (id.equals(7L)) {
+			TimeUnit.SECONDS.sleep(5L);
+		}
+		
 		Product product = productService.findById(id);
-		//product.setPort(Integer.parseInt(env.getProperty("local.server.port")));
-		product.setPort(port);
+		product.setPort(Integer.parseInt(env.getProperty("local.server.port")));
+		//product.setPort(port);
+
+		
 		return product;
 	}
 }
